@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pf_ltc_gpu"
+version = "0.1.0"
+description = "Phono3GPU: GPU-accelerated phonon thermal transport (RTA, direct solution, Wigner) with linear tetrahedron integration"
+readme = "README.md"
+license = {text = "BSD-3-Clause"}
+requires-python = ">=3.9"
+dependencies = ["numpy", "h5py", "torch", "phono3py==3.12.1"]
+
+[project.scripts]
+pf-run-gpu = "pf_ltc_gpu.cli:main"
+
+[tool.setuptools]
+packages = ["pf_ltc_gpu", "pf_ltc_gpu.analysis"]
