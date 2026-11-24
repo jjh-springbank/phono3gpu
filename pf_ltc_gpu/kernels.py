@@ -464,6 +464,7 @@ def thm_weights_pruned(omega, vs, ci, max_elems=2 ** 22, vertex_limit=False):
 
     omega : (J,) sampling points; vs : (N, 24, 4) sorted vertices; ci : (N, 24).
     Returns (J, N).  A tetrahedron contributes only when v0 < omega < v3
+    (v0 <= omega < v3 with vertex_limit)
     (otherwise I*g = 0 exactly), so only those (j, n, tet) are evaluated.
     """
     J, N = omega.shape[0], vs.shape[0]
@@ -477,7 +478,8 @@ def thm_weights_pruned(omega, vs, ci, max_elems=2 ** 22, vertex_limit=False):
         j, n = jj[i:i + step], nn[i:i + step]
         om = omega[j][:, None]
         v = vs[n]  # (k, 24, 4)
-        tet = (v[..., 0] < om) & (om < v[..., 3])
+        # with the vertex rule the lowest region is half-open, so omega == v0 must be kept
+        tet = ((v[..., 0] <= om) if vertex_limit else (v[..., 0] < om)) & (om < v[..., 3])
         kk, tt = tet.nonzero(as_tuple=True)
         w = thm_weight_I(om[kk], v[kk, tt][:, None], ci[n][kk, tt][:, None], vertex_limit)
         out.index_add_(0, j[kk] * N + n[kk], w * 6)  # thm_weight_I divides by 6
